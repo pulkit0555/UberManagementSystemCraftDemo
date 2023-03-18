@@ -4,6 +4,8 @@ import org.example.exception.DriverAlreadyPresentException;
 import org.example.exception.DriverNotFoundException;
 import org.example.exception.InvalidTaskIdException;
 import org.example.model.Driver;
+import org.example.model.Task;
+import org.example.model.TaskName;
 import org.example.tasks.BackgroundVerificationTaskProcessor;
 import org.example.tasks.DocumentCollectionTaskProcessor;
 import org.example.tasks.TaskProcessor;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 
 /** Driver manager class is used to manage all operations related to driver. */
 public class DriverManager {
-
+  private static final int TOTAL_TASKS = 3;
   private Map<Integer, Driver> drivers = new HashMap<>();
   //Map to store status of all tasks
   private Map<Integer, HashMap<Integer,Boolean>> driverTaskStatus =  new HashMap<>();
@@ -77,15 +79,23 @@ public class DriverManager {
 
   public void areDriverTasksCompleted(final int driverId){
     HashMap<Integer,Boolean> status = driverTaskStatus.get(driverId);
+    List<Task> unfinishedTasks = new ArrayList<>();
     int count=0;
-    for(int i=1;i<=3;i++){
-      if(status!=null && status.get(i)!=null && status.get(i) == true)
-        count++;
+    for(Task t : Task.values()){
+      if(status!=null && status.get(t.value)!= null && status.get(t.value) == true){
+          count++;
+      }else{
+          unfinishedTasks.add(t);
+      }
     }
-    if(count == 3){
-      System.out.println("Driver has finished the onboarding process. Congratulations!");
+
+    if(count == TOTAL_TASKS){
+      System.out.println("Driver "+driverId+" has finished the onboarding process. Congratulations!");
     }else {
-      System.out.println("Uh, oh! Seems like few tasks are pending, please mark all tasks finished");
+      System.out.println("Uh, oh! Seems like below tasks are pending for driver "+driverId+" , please complete them: ");
+      for(Task t : unfinishedTasks){
+        System.out.println(t);
+      }
     }
   }
 }
